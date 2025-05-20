@@ -73,7 +73,11 @@ fun ChessBoardScreen(
             textAlign = TextAlign.Center
         )
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Button(modifier = Modifier.padding(end = 16.dp), onClick = viewModel::onFindClick) {
+            Button(
+                enabled = uiState.value.successPaths.isEmpty() && !uiState.value.buttonsEnabled,
+                modifier = Modifier.padding(end = 16.dp),
+                onClick = viewModel::onFindClick
+            ) {
                 Text(text = "Find Solutions")
             }
             Button(onClick = viewModel::resetBoard) {
