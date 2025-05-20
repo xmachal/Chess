@@ -30,17 +30,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.application.chess.ui.board.BoardViewModel
 import com.application.chess.R
-import com.application.chess.ui.theme.ChessTheme
+import com.application.chess.ui.board.BoardViewModel
 
 
 @Composable
-fun ChessBoard(
+fun ChessBoardScreen(
     viewModel: BoardViewModel = hiltViewModel()
 ) {
     val uiState = viewModel.uiState.collectAsState()
@@ -58,13 +56,13 @@ fun ChessBoard(
             text = "Board App"
         )
         SelectNumberOfRow(onSetNumber = viewModel::setNumberOfRows, enable = uiState.value.buttonsEnabled)
-        Chess(
+        Board(
             numberOfRows = numberOfRows,
             position = uiState.value.position,
-            start = uiState.value.start,
-            last = uiState.value.last,
+            start = uiState.value.startingCell,
+            last = uiState.value.finalCell,
             enable = uiState.value.buttonsEnabled,
-            onCellClick = if (uiState.value.start == null) viewModel::onSetStartPosition else viewModel::onLastPositionClick
+            onCellClick = if (uiState.value.startingCell == null) viewModel::onSetStartPosition else viewModel::onLastPositionClick
         )
         Text(
             modifier = Modifier
@@ -74,21 +72,25 @@ fun ChessBoard(
             text = uiState.value.description,
             textAlign = TextAlign.Center
         )
-        Row {
-            Button(onClick = viewModel::onClick) {
-                Text(text = "Play")
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Button(modifier = Modifier.padding(end = 16.dp), onClick = viewModel::onFindClick) {
+                Text(text = "Find Solutions")
             }
             Button(onClick = viewModel::resetBoard) {
                 Text(text = "Reset")
             }
         }
-        SelectSuccessResult(list = uiState.value.successPaths, showPath = viewModel::showPath)
+        SelectSuccessResult(
+            list = uiState.value.successPaths,
+            showPath = viewModel::showPath,
+            enableButtons = uiState.value.buttonsEnabled
+        )
     }
 }
 
 
 @Composable
-fun Chess(
+fun Board(
     numberOfRows: Int,
     position: Pair<Int, Int>?,
     start: Pair<Int, Int>?,
@@ -122,6 +124,7 @@ fun Chess(
 @Composable
 fun SelectSuccessResult(
     list: List<List<Pair<Int, Int>>>,
+    enableButtons: Boolean,
     showPath: (Int) -> Unit
 ) {
     val expanded = remember { mutableStateOf(false) }
@@ -133,12 +136,17 @@ fun SelectSuccessResult(
         Text(
             modifier = Modifier
                 .padding(end = 6.dp)
-                .clickable { expanded.value = true }, text = if (list.isEmpty()) {
+                .clickable { expanded.value = true },
+            text =
+            if (enableButtons) {
+                ""
+            } else if (list.isEmpty()) {
                 "Δεν υπάρχει λύση"
             } else {
                 "Επίλεξε Λύση : "
             }
         )
+
         if (list.isNotEmpty()) {
             DropdownMenu(
                 expanded = expanded.value,
@@ -198,16 +206,6 @@ fun SelectNumberOfRow(
 }
 
 @Composable
-fun NumberText(num: Int) {
-    Text("$num x $num")
-}
-
-@Composable
-fun ResultText(num: Int) {
-    Text("Λύση $num")
-}
-
-@Composable
 fun CellsContent(
     col: Int,
     row: Int,
@@ -261,10 +259,12 @@ fun CellsContent(
     }
 }
 
-@Preview(showBackground = true)
 @Composable
-fun GreetingPreview() {
-    ChessTheme {
-        //ChessBoard(position = Pair(1, 1), start = Pair(1, 1), last = Pair(1, 1))
-    }
+fun NumberText(num: Int) {
+    Text("$num x $num")
+}
+
+@Composable
+fun ResultText(num: Int) {
+    Text("Λύση $num")
 }

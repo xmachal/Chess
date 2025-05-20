@@ -6,7 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.application.chess.ui.board.BoardViewModel
-import com.application.chess.ui.board.composables.ChessBoard
+import com.application.chess.ui.board.composables.ChessBoardScreen
 import com.application.chess.ui.theme.ChessTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -19,7 +19,7 @@ class MainActivity : ComponentActivity() {
             val viewModel: BoardViewModel = hiltViewModel()
             viewModel.initBoardScreen()
             ChessTheme {
-                ChessBoard(viewModel = viewModel)
+                ChessBoardScreen(viewModel = viewModel)
             }
         }
     }

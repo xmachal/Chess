@@ -76,9 +76,13 @@ dependencies {
     ksp(libs.dagger.hilt.android.compiler)
     implementation(libs.androidx.hilt.navigation.compose)
 
-
-
     implementation(libs.squareup.moshi)
     ksp(libs.squareup.moshi.codegen)
     implementation(libs.kotlinx.serialization.json.v180)
+
+    implementation(libs.room.runtime)
+    implementation(libs.room.ktx)
+    ksp(libs.room.compiler)
+
+    implementation(libs.gson)
 }
